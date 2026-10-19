@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+/*
+ * MCCIA brand tokens: change colours here only.
+ * Sampled from mcciapune.com (main.css) and the MCCIA logo PNG.
+ */
+:root {
+  --mccia-blue: #176dae;        /* logo blue: primary, buttons, links (passes AA on white) */
+  --mccia-blue-bright: #0082de; /* site button / highlight blue */
+  --mccia-blue-dark: #003961;   /* site deep blue: hover, headings */
+  --mccia-navy: #263150;        /* site navy: body headings, footer */
+  --mccia-green: #18ab56;       /* logo green: success */
+  --mccia-teal: #0f9b9b;        /* App Hub style teal accent */
+  --mccia-danger: #d64545;
+
+  --surface: #ffffff;
+  --background: #f3f6fa;
+  --border: #e2e8f0;
+  --text: #1f2937;
+  --text-muted: #64748b;
+  --shadow-soft: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px rgb(15 23 42 / 0.06);
+}
+
+@theme inline {
+  --color-brand: var(--mccia-blue);
+  --color-brand-bright: var(--mccia-blue-bright);
+  --color-brand-dark: var(--mccia-blue-dark);
+  --color-navy: var(--mccia-navy);
+  --color-success: var(--mccia-green);
+  --color-teal: var(--mccia-teal);
+  --color-danger: var(--mccia-danger);
+  --color-surface: var(--surface);
+  --color-background: var(--background);
+  --color-line: var(--border);
+  --color-ink: var(--text);
+  --color-muted: var(--text-muted);
+  --shadow-soft: var(--shadow-soft);
+  --font-sans: var(--font-outfit), system-ui, sans-serif;
+  --font-heading: var(--font-bricolage), var(--font-outfit), system-ui, sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3,
+.font-heading {
+  font-family: var(--font-heading);
+  color: var(--mccia-navy);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-soft);
+}
+
+/* Bold uppercase section labels, as on mcciapune.com */
+.section-label {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mccia-blue);
+}
+
+.field {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  padding: 0.7rem 0.85rem;
+  font-size: 1rem; /* 16px stops iOS zooming into inputs */
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field:focus {
+  border-color: var(--mccia-blue);
+  box-shadow: 0 0 0 3px rgb(23 109 174 / 0.15);
+}
+.field[aria-invalid="true"] {
+  border-color: var(--mccia-danger);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.7rem 1.1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s;
+  cursor: pointer;
+  min-height: 44px;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--mccia-blue);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--mccia-blue-dark);
+}
+.btn-secondary {
+  background: var(--surface);
+  color: var(--mccia-blue);
+  border: 1.5px solid var(--mccia-blue);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: rgb(23 109 174 / 0.06);
+}
+.btn-ghost {
+  color: var(--text-muted);
+}
+.btn-ghost:hover:not(:disabled) {
+  color: var(--mccia-navy);
+  background: rgb(15 23 42 / 0.04);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  background: rgb(15 155 155 / 0.1);
+  color: #0b6e6e;
+  padding: 0.3rem 0.4rem 0.3rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.error-text {
+  color: var(--mccia-danger);
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+}
