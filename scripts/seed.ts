@@ -20,7 +20,11 @@ async function main() {
   if (admins.length === 0) console.warn("  note: no admin rows in this CSV (set the 4th column to 'admin').");
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Exit explicitly: the postgres-js pool keeps the process alive otherwise.
+main().then(
+  () => process.exit(0),
+  (err) => {
+    console.error(err);
+    process.exit(1);
+  },
+);

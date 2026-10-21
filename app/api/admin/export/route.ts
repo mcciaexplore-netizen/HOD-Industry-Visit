@@ -29,6 +29,8 @@ export async function GET(req: NextRequest) {
 
   const filters = filtersFromSearchParams(Object.fromEntries(req.nextUrl.searchParams));
   const data = await exportVisits(filters);
+  // Photos live in a private store, so links go through the app (sign-in required).
+  const photoUrl = (id: string) => new URL(`/photos/${id}`, req.nextUrl.origin).toString();
 
   const wb = new ExcelJS.Workbook();
   wb.creator = "MCCIA HOD Industry Visit";
@@ -77,7 +79,7 @@ export async function GET(req: NextRequest) {
       members: v.accompanyingMembers.join(", "),
       purpose: v.purpose,
       count: v.photos.length,
-      photos: v.photos.map((p) => p.blobUrl).join("\n"),
+      photos: v.photos.map((p) => photoUrl(p.id)).join("\n"),
       maps: maps.join("\n"),
       id: v.id,
     });
@@ -95,7 +97,7 @@ export async function GET(req: NextRequest) {
         lat: p.latitude,
         lng: p.longitude,
         acc: p.accuracyM !== null ? Math.round(p.accuracyM) : null,
-        url: link(p.blobUrl, "Open photo"),
+        url: link(photoUrl(p.id), "Open photo"),
         map: hasLoc ? link(mapsUrl(p.latitude!, p.longitude!), "Open map") : null,
       });
     }

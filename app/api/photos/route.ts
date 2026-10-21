@@ -18,9 +18,17 @@ export async function POST(req: Request) {
   const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
   if (!isJpeg) return NextResponse.json({ error: "Only JPEG photos are accepted." }, { status: 415 });
 
-  const blob = await put(`visits/${user.id}/${crypto.randomUUID()}.jpg`, Buffer.from(bytes), {
-    access: "public",
-    contentType: "image/jpeg",
-  });
-  return NextResponse.json({ url: blob.url });
+  // The Blob store is private: photos are only readable through /photos/[id].
+  try {
+    const blob = await put(`visits/${user.id}/${crypto.randomUUID()}.jpg`, Buffer.from(bytes), {
+      access: "private",
+      contentType: "image/jpeg",
+    });
+    return NextResponse.json({ url: blob.url });
+  } catch (err) {
+    // Usually a missing/wrong BLOB_READ_WRITE_TOKEN or a store access mismatch.
+    console.error("Photo upload failed:", err);
+    const detail = process.env.NODE_ENV !== "production" && err instanceof Error ? ` (${err.message})` : "";
+    return NextResponse.json({ error: `Photo storage is unavailable right now. Please try again.${detail}` }, { status: 502 });
+  }
 }

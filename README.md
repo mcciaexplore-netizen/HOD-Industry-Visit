@@ -94,7 +94,7 @@ Find your PC's IP with `ipconfig`. On some phones, the camera stays blocked behi
 - [ ] Submitting with empty fields shows inline errors
 - [ ] Submit, see the success screen, tap Report another visit
 - [ ] My Visits lists the report. The detail page shows photos, a map link and members.
-- [ ] Admin: filters, search, detail view and Export to Excel work, and the links in the export open
+- [ ] Admin: filters, search, detail view and Export to Excel work, and the photo links in the export open after signing in
 
 ---
 
@@ -143,7 +143,7 @@ Add the production URL to the App Hub card. Vercel serves HTTPS only, and the ap
 - **Upload Photo** accepts multiple files. Each photo gets a date and time picker (defaults to now). Adding a location is optional. EXIF data is ignored.
 - Each image is resized in the browser to a long edge of at most 1600 px and saved as JPEG at quality 0.8. Photos upload one per request (to stay under Vercel's 4.5 MB body limit) to `visits/<hodId>/<uuid>.jpg` in Blob. When saving, the server only accepts Blob URLs under the signed-in HOD's own prefix.
 - `visits.created_at` and `visit_photos.created_at` record **server time** for audit. `visit_photos.captured_at` holds device time (camera) or the time the user chose (upload).
-- Blob files are public at unguessable URLs, so the Excel links open without signing in. Treat exported files as confidential.
+- The Blob store is **private**. Photos are served only through `/photos/<id>` (`app/photos/[id]/route.ts`), which checks that the viewer is the reporting HOD or an admin. Excel photo links point there too, so opening one asks for sign-in.
 
 ### Auth and swapping in App Hub SSO
 

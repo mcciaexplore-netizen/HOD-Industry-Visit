@@ -59,8 +59,8 @@ export function VisitDetail({ visit, showHod = false }: { visit: VisitDetailData
             const hasLoc = p.latitude !== null && p.longitude !== null;
             return (
               <li key={p.id} className="overflow-hidden rounded-xl border border-line">
-                <a href={p.blobUrl} target="_blank" rel="noreferrer">
-                  <img src={p.blobUrl} alt={`Photo at ${visit.companyName}`} loading="lazy" className="aspect-[4/3] w-full bg-background object-cover" />
+                <a href={`/photos/${p.id}`} target="_blank" rel="noreferrer">
+                  <img src={`/photos/${p.id}`} alt={`Photo at ${visit.companyName}`} loading="lazy" className="aspect-[4/3] w-full bg-background object-cover" />
                 </a>
                 <div className="space-y-1 p-3 text-sm">
                   <span

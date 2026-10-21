@@ -113,31 +113,42 @@ export class LocationError extends Error {
   }
 }
 
-export function getLocation(maximumAge = 0): Promise<GeoFix> {
-  return new Promise((resolve, reject) => {
-    if (!("geolocation" in navigator)) {
-      reject(new LocationError("This browser cannot share your location.", false));
-      return;
+function currentPosition(options: PositionOptions): Promise<GeolocationPosition> {
+  return new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, options));
+}
+
+/**
+ * Tries a GPS-grade fix first. Laptops and indoor phones often can't get one,
+ * so on timeout or "unavailable" it falls back to a network (Wi-Fi) fix, whose
+ * accuracy is still recorded on the photo.
+ */
+export async function getLocation(maximumAge = 0): Promise<GeoFix> {
+  if (!("geolocation" in navigator)) throw new LocationError("This browser cannot share your location.", false);
+  let pos: GeolocationPosition;
+  try {
+    pos = await currentPosition({ enableHighAccuracy: true, timeout: 15000, maximumAge });
+  } catch (first) {
+    const err = first as GeolocationPositionError;
+    if (err.code === err.PERMISSION_DENIED) throw deniedError();
+    try {
+      pos = await currentPosition({ enableHighAccuracy: false, timeout: 15000, maximumAge: Math.max(maximumAge, 60_000) });
+    } catch (second) {
+      const err2 = second as GeolocationPositionError;
+      if (err2.code === err2.PERMISSION_DENIED) throw deniedError();
+      throw new LocationError(
+        "Couldn't get your location. Check that Location is turned on (on a Mac: System Settings › Privacy & Security › Location Services, and allow your browser), then tap Retry.",
+        false,
+      );
     }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({ latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy }),
-      (err) => {
-        if (err.code === err.PERMISSION_DENIED) {
-          reject(
-            new LocationError(
-              "Location permission is blocked. Allow location for this site in your browser settings (and turn on Location on your phone), then tap Retry.",
-              true,
-            ),
-          );
-        } else if (err.code === err.TIMEOUT) {
-          reject(new LocationError("Getting your location took too long. Move near a window or outdoors and tap Retry.", false));
-        } else {
-          reject(new LocationError("Your location is unavailable. Check that Location is turned on and tap Retry.", false));
-        }
-      },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge },
-    );
-  });
+  }
+  return { latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy };
+}
+
+function deniedError() {
+  return new LocationError(
+    "Location permission is blocked. Allow location for this site in your browser settings (and turn on Location on your phone), then tap Retry.",
+    true,
+  );
 }
 
 /** "yyyy-MM-ddTHH:mm" in the device's local time, for <input type="datetime-local">. */

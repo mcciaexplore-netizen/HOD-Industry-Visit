@@ -24,7 +24,7 @@ const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFin
 function isOwnBlobUrl(url: string, hodId: string): boolean {
   try {
     const u = new URL(url);
-    return u.protocol === "https:" && u.hostname.endsWith(".public.blob.vercel-storage.com") && u.pathname.startsWith(`/visits/${hodId}/`);
+    return u.protocol === "https:" && u.hostname.endsWith(".private.blob.vercel-storage.com") && u.pathname.startsWith(`/visits/${hodId}/`);
   } catch {
     return false;
   }
