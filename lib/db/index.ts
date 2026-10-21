@@ -1,5 +1,5 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
 
 type Db = ReturnType<typeof drizzle<typeof schema>>;
@@ -11,7 +11,9 @@ function getDb(): Db {
   if (cached) return cached;
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL environment variable is not set");
-  cached = drizzle(neon(url), { schema });
+  // prepare: false is required by Supabase's transaction pooler (port 6543).
+  // A small pool suits serverless functions, which each hold their own.
+  cached = drizzle(postgres(url, { prepare: false, max: 3 }), { schema });
   return cached;
 }
 

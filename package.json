@@ -15,12 +15,12 @@
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0",
     "@vercel/blob": "^2.6.1",
     "drizzle-orm": "^0.45.2",
     "exceljs": "^4.4.0",
     "jose": "^6.2.4",
     "next": "16.2.12",
+    "postgres": "^3.4.9",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "server-only": "^0.0.1"

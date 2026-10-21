@@ -15,11 +15,11 @@ export async function POST(req: Request) {
   const { companyName, accompanyingMembers, purpose, photos } = parsed.value;
   const visitId = crypto.randomUUID();
 
-  // One HTTP round trip, executed as a single transaction. created_at defaults
-  // to server time on both tables for the audit trail.
-  await db.batch([
-    db.insert(visits).values({ id: visitId, hodId: user.id, companyName, accompanyingMembers, purpose }),
-    db.insert(visitPhotos).values(
+  // One transaction so a visit is never saved without its photos. created_at
+  // defaults to server time on both tables for the audit trail.
+  await db.transaction(async (tx) => {
+    await tx.insert(visits).values({ id: visitId, hodId: user.id, companyName, accompanyingMembers, purpose });
+    await tx.insert(visitPhotos).values(
       photos.map((p) => ({
         visitId,
         blobUrl: p.blobUrl,
@@ -29,8 +29,8 @@ export async function POST(req: Request) {
         longitude: p.longitude,
         accuracyM: p.accuracyM,
       })),
-    ),
-  ]);
+    );
+  });
 
   return NextResponse.json({ id: visitId }, { status: 201 });
 }
